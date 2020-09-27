@@ -1,0 +1,11 @@
+---
+- hosts: asa
+  gather_facts: no
+
+  roles:
+    - CiscoASA_Net_Object-add
+    - CiscoASA_Net_Object-delete
+
+  collections:
+    - cisco.asa
+    - ansible.netcommon

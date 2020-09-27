@@ -1,0 +1,19 @@
+---
+- name: Check if network object exists
+  cisco.asa.asa_command:
+    commands: |
+      show run object network | grep {{ ansible_hostname }}
+  register: result
+  when:
+    - '"delete" in STATE'
+   
+- name: "Delete network object {{ ansible_hostname }}"
+  cisco.asa.asa_command:
+    commands: |
+      conf t
+      no object network {{ ansible_hostname }}
+      end
+      wr
+  when: 
+    - 'result.stdout is defined and ansible_hostname" in result.stdout'
+    - '"delete" in STATE'
