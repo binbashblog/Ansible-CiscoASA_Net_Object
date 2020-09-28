@@ -1,12 +1,24 @@
 ---
+
+# Note: Do not delete the underscore "_" in the below command, its not a typo, it's to regex an exact match
 - name: Check if network object exists
   cisco.asa.asa_command:
     commands: |
-      show run object network | grep {{ ansible_hostname }}
-  register: result
+      show run object network | grep {{ ansible_hostname }}_
+  register: resultn
   when:
     - '"delete" in STATE'
-   
+
+- set_fact:
+    resultx: "{{ resultn.stdout | map('trim') }}"
+  when:
+    - '"delete" in STATE'
+
+- set_fact:
+    hostn: "object network {{ ansible_hostname }}"
+  when:
+    - '"delete" in STATE'
+
 - name: "Delete network object {{ ansible_hostname }}"
   cisco.asa.asa_command:
     commands: |
@@ -14,6 +26,6 @@
       no object network {{ ansible_hostname }}
       end
       wr
-  when: 
-    - 'result.stdout is defined and ansible_hostname" in result.stdout'
+  when:
     - '"delete" in STATE'
+    - 'hostn in resultx'
